@@ -1,6 +1,6 @@
 from django.db import models
 from better_b_cut import settings
-from movie import Movie
+from movie.models import Movie
 
 # Create your models here.
 class Adaptation(models.Model):
