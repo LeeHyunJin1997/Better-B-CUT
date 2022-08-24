@@ -10,44 +10,46 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
+        ('movie', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Original',
+            name='Adaptation',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.CharField(choices=[('Story', '시나리오'), ('Script', '대본')], max_length=8)),
+                ('type', models.CharField(max_length=8)),
                 ('title', models.CharField(max_length=50)),
                 ('content', models.TextField()),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='originals', to=settings.AUTH_USER_MODEL)),
+                ('movie', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='movie.movie')),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='adaptations', to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
-            name='OriginalComment',
+            name='AdaptationComment',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('content', models.CharField(max_length=200)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('original', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='original.original')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='original_comments', to=settings.AUTH_USER_MODEL)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='OriginalLike',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('original', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='original_likes', to='original.original')),
+                ('adaptation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='adaptation.adaptation')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
-            name='OriginalCommentLike',
+            name='AdaptationLike',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('original_comment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='original_comment_likes', to='original.originalcomment')),
+                ('adaptation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='adaptation.adaptation')),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='AdaptationCommentLike',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('adaptation_comment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='adaptation.adaptationcomment')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),

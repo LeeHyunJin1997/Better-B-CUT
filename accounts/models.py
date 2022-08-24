@@ -17,4 +17,4 @@ class Follow(models.Model):
     to_user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='from_user')
 
     class Meta:
-        db_talble = 'follow'
+        db_table = 'follow'
