@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'opinion',
     'original',
 
+    'rest_framework',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
