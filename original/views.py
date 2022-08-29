@@ -24,14 +24,35 @@ def create_or_list_original(request):
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def original_detail(request, original_id):
+    original = get_object_or_404(Original, id=original_id)
     if request.method == 'GET':
-        pass
+        serializer = OriginalSerializer(original)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
     elif request.method == 'PUT':
-        pass
+        serializer = OriginalSerializer(original, data=request.data)
+        if original.user == request.user:
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response(serializer.data, stauts=status.HTTP_201_CREATED)
+        else:
+            data = {
+                'message': '수정은 작성자만 가능합니다.'
+            }
+            return Response(data, status=status.HTTP_401_UNAUTHORIZED)
 
     elif request.method == 'DELETE':
-        pass
+        if original.user == request.user:
+            original.delete()
+            data = {
+                'message': '정상적으로 삭제되었습니다.'
+            }
+            return Response(data, status=status.HTTP_204_NO_CONTENT)
+        else:
+            data = {
+                'message': '삭제는 작성자만 가능합니다.'
+            }
+            return Response(data, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['GET', 'POST', 'DELETE'])
 def original_like(request, original_id):
