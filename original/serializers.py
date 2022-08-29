@@ -14,7 +14,7 @@ class OriginalSerializer(serializers.Serializer):
         model = Original
         fields = '__all__'
 
-class OriginalCommentSeirializer(serializers.Serializer):
+class OriginalCommentSerializer(serializers.Serializer):
 
     class Meta:
         model = OriginalComment

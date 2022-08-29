@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from movie.models import Movie
 from original.models import Original, OriginalComment, OriginalCommentLike, OriginalLike
-from original.serializers import OriginalCommentLikeSerializer, OriginalCommentSeirializer, OriginalLikeSerializer, OriginalListSerializer, OriginalSerializer
+from original.serializers import OriginalCommentLikeSerializer, OriginalCommentSerializer, OriginalLikeSerializer, OriginalListSerializer, OriginalSerializer
 
 # Create your views here.
 @api_view(['GET', 'POST'])
@@ -66,8 +66,7 @@ def original_like(request, original_id):
             }
             return Response(data, status=status.HTTP_406_NOT_ACCEPTABLE)
         else:
-            serializer=OriginalSerializer(data=request.data)
-            serializer.save(user=user, original=original)
+            OriginalLike.objects.create(user=user, original=original)
 
             like_users = get_list_or_404(OriginalLike, original=original)
             serializer = OriginalLikeSerializer(like_users, many=True)
@@ -111,11 +110,11 @@ def original_comment_detail(request, original_id, original_comment_id):
     comment = get_object_or_404(OriginalComment, id=original_comment_id)
     if request.method == 'PUT':
         if comment.user == request.user:
-            serializer = OriginalCommentSeirializer(comment, data=request.data)
+            serializer = OriginalCommentSerializer(comment, data=request.data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 comments = OriginalComment.objects.all()
-                serializer = OriginalCommentSeirializer(comments, many=True)
+                serializer = OriginalCommentSerializer(comments, many=True)
                 return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             data = {
@@ -125,7 +124,12 @@ def original_comment_detail(request, original_id, original_comment_id):
 
     elif request.method == 'DELETE':
         if comment.user == request.user:
-            pass
+            comment.delete()
+
+            comments = OriginalComment.objects.all()
+            serializer = OriginalCommentSerializer(comments, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
         else:
             data = {
                 'message': '댓글은 작성자만 삭제 가능합니다.'
