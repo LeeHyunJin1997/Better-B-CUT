@@ -4,8 +4,8 @@ from django.shortcuts import get_list_or_404, get_object_or_404
 from rest_framework import status
 from rest_framework.response import Response
 from movie.models import Movie
-from original.models import Original
-from original.serializers import OriginalListSerializer, OriginalSerializer
+from original.models import Original, OriginalLike
+from original.serializers import OriginalLikeSerializer, OriginalListSerializer, OriginalSerializer
 
 # Create your views here.
 @api_view(['GET', 'POST'])
@@ -56,14 +56,40 @@ def original_detail(request, original_id):
 
 @api_view(['GET', 'POST', 'DELETE'])
 def original_like(request, original_id):
+    original = get_object_or_404(Original, id=original_id)
+    user = request.user
     if request.method == 'GET':
-        pass
+        like_users = get_list_or_404(OriginalLike, original=original)
+        serializer = OriginalLikeSerializer(like_users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'POST':
-        pass
+        if OriginalLike.objects.filter(user=user, original=original).exists():
+            data = {
+                'message': '이미 좋아요 상태입니다.'
+            }
+            return Response(data, status=status.HTTP_406_NOT_ACCEPTABLE)
+        else:
+            serializer=OriginalSerializer(data=request.data)
+            serializer.save(user=user, original=original)
+
+            like_users = get_list_or_404(OriginalLike, original=original)
+            serializer = OriginalLikeSerializer(like_users, many=True)
+            return Response(serializer.data, staus=status.HTTP_201_CREATED)
 
     elif request.method == 'DELETE':
-        pass
+        if OriginalLike.objects.filter(user=user, original=original).exists():
+            original_like = OriginalLike.objects.filter(user=user, original=original)
+            original_like.delete()
+
+            like_users = get_list_or_404(OriginalLike, original=original)
+            serializer = OriginalLikeSerializer(like_users, many=True)
+            return Response(data, status=status.HTTP_200_OK)
+        else:
+            data = {
+                'message': '좋아요 하지 않은 상태입니다.'
+            }
+            return Response(data, status=status.HTTP_406_NOT_ACCEPTABLE)
 
 @api_view(['GET', 'POST']):
 def original_comment(request, original_id):
