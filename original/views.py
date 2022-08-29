@@ -102,7 +102,6 @@ def original_comment(request, original_id):
 
             comments = OriginalComment.objects.all()
             serializer = OriginalCommentSerializer(comments, many=True)
-            #댓글 리스트가 있고 상세보기가 따로 있나??
             return Response(serializer.data, stastus=status.HTTP_201_CREATED)
 
 @api_view(['PUT', 'DELETE'])
