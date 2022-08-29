@@ -6,6 +6,7 @@ class OriginalListSerializer(serializers.Serializer):
     class Meta:
         model = Original
         fields = '__all__'
+        read_only_fields = ('user', )
 
 class OriginalSerializer(serializers.Serializer):
 
