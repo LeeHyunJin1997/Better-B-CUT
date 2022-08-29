@@ -54,16 +54,12 @@ def original_detail(request, original_id):
             }
             return Response(data, status=status.HTTP_401_UNAUTHORIZED)
 
-@api_view(['GET', 'POST', 'DELETE'])
+@api_view(['POST', 'DELETE'])
 def original_like(request, original_id):
     original = get_object_or_404(Original, id=original_id)
     user = request.user
-    if request.method == 'GET':
-        like_users = get_list_or_404(OriginalLike, original=original)
-        serializer = OriginalLikeSerializer(like_users, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
-    elif request.method == 'POST':
+    if request.method == 'POST':
         if OriginalLike.objects.filter(user=user, original=original).exists():
             data = {
                 'message': '이미 좋아요 상태입니다.'
@@ -91,7 +87,7 @@ def original_like(request, original_id):
             }
             return Response(data, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-@api_view(['GET', 'POST']):
+@api_view(['GET', 'POST'])
 def original_comment(request, original_id):
     original = get_object_or_404(Original, id=original_id)
     comments = get_list_or_404(OriginalComment, original=original)
@@ -141,12 +137,8 @@ def original_comment_like(request, original_id, original_comment_id):
     original = get_object_or_404(Original, id=original_id)
     comment = get_object_or_404(OriginalComment, id=original_comment_id)
     user = request.user
-    if request.method == 'GET':
-        comments = OriginalComment.objects.filter(original=original)
-        serializer = OriginalCommentSeirializer(comments, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
-    elif request.method == 'POST':
+    if request.method == 'POST':
         if OriginalCommentLike.objects.filter(user=user, original_comment=comment).exists():
             data = {
                 'messsage': '이미 좋아요 한 상태입니다.'
@@ -167,7 +159,7 @@ def original_comment_like(request, original_id, original_comment_id):
         else:
             original_comment_like = OriginalCommentLike.objects.filter(user=user, original_comment=comment)
             original_comment_like.delete()
-            
+
             like_users = get_list_or_404(OriginalCommentLike, original_comment=comment)
             serializer = OriginalCommentLikeSerializer(like_users, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
