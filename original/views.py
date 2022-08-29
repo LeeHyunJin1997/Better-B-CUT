@@ -92,16 +92,16 @@ def original_comment(request, original_id):
     comments = get_list_or_404(OriginalComment, original=original)
 
     if request.method == 'GET':
-        serializer = OriginalCommentSeirializer(comments, many=True)
+        serializer = OriginalCommentSerializer(comments, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'POST':
-        serializer = OriginalCommentSeirializer(data=request.data)
+        serializer = OriginalCommentSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save(user=request.user, original=original)
 
             comments = OriginalComment.objects.all()
-            serializer = OriginalCommentSeirializer(comments, many=True)
+            serializer = OriginalCommentSerializer(comments, many=True)
             #댓글 리스트가 있고 상세보기가 따로 있나??
             return Response(serializer.data, stastus=status.HTTP_201_CREATED)
 
