@@ -12,7 +12,7 @@ def adaptation_detail(request):
     pass
 
 
-@api_view(['GET', 'POST', 'DELETE'])
+@api_view(['POST', 'DELETE'])
 def like(request):
     pass
 
@@ -27,6 +27,6 @@ def comment_detail(request):
     pass
 
 
-@api_view(['GET', 'POST', 'DELETE'])
+@api_view(['POST', 'DELETE'])
 def comment_like(request):
     pass
