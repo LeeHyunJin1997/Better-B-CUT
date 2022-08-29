@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Original, OriginalComment, OriginalLike
+from .models import Original, OriginalComment, OriginalCommentLike, OriginalLike
 
 class OriginalListSerializer(serializers.Serializer):
 
@@ -25,3 +25,10 @@ class OriginalLikeSerializer(serializers.Serializer):
     class Meta:
         model = OriginalLike
         fields = '__all__'
+
+class OriginalCommentLikeSerializer(serializers.Serializer):
+
+    class Meta:
+        model = OriginalCommentLike
+        fields = '__all__'
+        read_only_fields = '__all__'
