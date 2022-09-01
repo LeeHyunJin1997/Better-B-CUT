@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from django.shortcuts import get_list_or_404, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from rest_framework import status
 from rest_framework.response import Response
 from movie.models import Movie
@@ -17,9 +18,10 @@ def create_or_list_original(request):
 
     elif request.method == 'POST':
         serializer = OriginalSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(user=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if request.user.is_authenticated:
+            if serializer.is_valid(raise_exception=True):
+                serializer.save(user=request.user)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -31,34 +33,47 @@ def original_detail(request, original_id):
     
     elif request.method == 'PUT':
         serializer = OriginalSerializer(original, data=request.data)
-        if original.user == request.user:
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
-                return Response(serializer.data, stauts=status.HTTP_201_CREATED)
+        if request.user.is_authenticated:
+            if original.user == request.user:
+                if serializer.is_valid(raise_exception=True):
+                    serializer.save()
+                    return Response(serializer.data, stauts=status.HTTP_201_CREATED)
+            else:
+                data = {
+                    'message': '수정은 작성자만 가능합니다.'
+                }
+                return Response(data, status=status.HTTP_403_FORBIDDEN)
         else:
             data = {
-                'message': '수정은 작성자만 가능합니다.'
+                'message': '로그인 후 이용 가능합니다.'
             }
             return Response(data, status=status.HTTP_401_UNAUTHORIZED)
 
     elif request.method == 'DELETE':
-        if original.user == request.user:
-            original.delete()
-            data = {
-                'message': '정상적으로 삭제되었습니다.'
-            }
-            return Response(data, status=status.HTTP_204_NO_CONTENT)
+        if request.user.is_authenticated:
+            if original.user == request.user:
+                original.delete()
+                data = {
+                    'message': '정상적으로 삭제되었습니다.'
+                }
+                return Response(data, status=status.HTTP_204_NO_CONTENT)
+            else:
+                data = {
+                    'message': '삭제는 작성자만 가능합니다.'
+                }
+                return Response(data, status=status.HTTP_403_FORBIDDEN)
         else:
             data = {
-                'message': '삭제는 작성자만 가능합니다.'
+                'message': '로그인 후 이용 가능합니다.'
             }
-            return Response(data, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(data, stauts=status.HTTP_401_UNAUTHORIZED)
 
+@login_required
 @api_view(['POST', 'DELETE'])
 def original_like(request, original_id):
     original = get_object_or_404(Original, id=original_id)
     user = request.user
-
+    
     if request.method == 'POST':
         if OriginalLike.objects.filter(user=user, original=original).exists():
             data = {
@@ -97,13 +112,20 @@ def original_comment(request, original_id):
 
     elif request.method == 'POST':
         serializer = OriginalCommentSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(user=request.user, original=original)
+        if request.user.is_authenticated:
+            if serializer.is_valid(raise_exception=True):
+                serializer.save(user=request.user, original=original)
 
-            comments = OriginalComment.objects.filter(original=original)
-            serializer = OriginalCommentSerializer(comments, many=True)
-            return Response(serializer.data, stastus=status.HTTP_201_CREATED)
+                comments = OriginalComment.objects.filter(original=original)
+                serializer = OriginalCommentSerializer(comments, many=True)
+                return Response(serializer.data, stastus=status.HTTP_201_CREATED)
+        else:
+            data = {
+                'message': '로그인 후 이용 가능합니다.'
+            }
+            return Response(data, stastus=status.HTTP_401_UNAUTHORIZED)
 
+@login_required
 @api_view(['PUT', 'DELETE'])
 def original_comment_detail(request, original_id, original_comment_id):
     comment = get_object_or_404(OriginalComment, id=original_comment_id)
@@ -136,7 +158,8 @@ def original_comment_detail(request, original_id, original_comment_id):
             }
             return Response(data, status=status.HTTP_204_NO_CONTENT)
 
-@api_view(['GET', 'POST', 'DELETE'])
+@login_required
+@api_view(['POST', 'DELETE'])
 def original_comment_like(request, original_id, original_comment_id):
     original = get_object_or_404(Original, id=original_id)
     comment = get_object_or_404(OriginalComment, id=original_comment_id)
