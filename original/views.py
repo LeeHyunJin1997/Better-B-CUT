@@ -100,19 +100,20 @@ def original_comment(request, original_id):
         if serializer.is_valid(raise_exception=True):
             serializer.save(user=request.user, original=original)
 
-            comments = OriginalComment.objects.all()
+            comments = OriginalComment.objects.filter(original=original)
             serializer = OriginalCommentSerializer(comments, many=True)
             return Response(serializer.data, stastus=status.HTTP_201_CREATED)
 
 @api_view(['PUT', 'DELETE'])
 def original_comment_detail(request, original_id, original_comment_id):
     comment = get_object_or_404(OriginalComment, id=original_comment_id)
+    original = get_object_or_404(Original, id=original_id)
     if request.method == 'PUT':
         if comment.user == request.user:
             serializer = OriginalCommentSerializer(comment, data=request.data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
-                comments = OriginalComment.objects.all()
+                comments = OriginalComment.objects.filter(original=original)
                 serializer = OriginalCommentSerializer(comments, many=True)
                 return Response(serializer.data, status=status.HTTP_200_OK)
         else:
@@ -125,7 +126,7 @@ def original_comment_detail(request, original_id, original_comment_id):
         if comment.user == request.user:
             comment.delete()
 
-            comments = OriginalComment.objects.all()
+            comments = OriginalComment.objects.filter(original=original)
             serializer = OriginalCommentSerializer(comments, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
