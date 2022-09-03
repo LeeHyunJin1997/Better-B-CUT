@@ -4,6 +4,13 @@ from opinion.serializers import OpinionListSerializer
 from original.serializers import OriginalListSerializer
 from django.contrib.auth import get_user_model
 
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = get_user_model()
+        fields = '__all__'
+
+
 class ProfileSerializer(serializers.ModelSerializer):
     class FollowListSerializer(serializers.ModelSerializer):
 
