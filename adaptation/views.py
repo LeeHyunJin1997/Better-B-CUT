@@ -6,8 +6,8 @@ from rest_framework.response import Response
 
 from .models import Adaptation, AdaptationLike, AdaptationComment, AdaptationCommentLike
 from .serializers import AdaptationSerializer, AdaptationCommentSerializer
-from ..movie.models import Movie
-from ..movie.serializers import MovieSerializer
+from movie.models import Movie
+from movie.serializers import MovieSerializer
 
 # Create your views here.
 @api_view(['GET', 'POST'])
