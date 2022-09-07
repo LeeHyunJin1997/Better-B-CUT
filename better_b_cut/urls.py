@@ -20,6 +20,7 @@ from . import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/opinion', include('opinion.urls'))
+    path('api/v1/opinion', include('opinion.urls')),
+    path('api/v1/adaptation', include('adaptation.urls'))
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
