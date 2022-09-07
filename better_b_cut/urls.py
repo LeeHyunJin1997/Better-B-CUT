@@ -24,5 +24,8 @@ urlpatterns = [
     path('api/v1/adaptation/', include('adaptation.urls')),
     path('api/v1/original/', include('original.urls')),
     path('api/v1/movie/', include('movie.urls')),
+    path('api/v1/accounts/', include('accounts.urls')),
+    path('api/v1/accounts/', include('dj_rest_auth.urls')),
+    path('api/v1/accounts/signup/', include('dj_rest_auth.registration.urls')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     nickname = models.CharField(max_length=8)
     signup_date = models.DateTimeField(auto_now_add=True)
-    point = models.IntegerField()
+    point = models.IntegerField(null=True)
 
 
     class Meta:
