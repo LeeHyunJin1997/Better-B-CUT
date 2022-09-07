@@ -27,16 +27,9 @@ def adaptation_list(request):
         if request.user.is_authenticated:
             # 유효성 검사
             if adaptation_serializer.is_valid(raise_exception=True):
-                # 사용자에게 받아온 movie가 데이터베이스에 있다면
-                if Movie.objects.filter(movie=movie).exists():
-                    # 저장
-                    adaptation_serializer.save(movie=movie, user=request.user)
-                    return Response(adaptation_serializer.data, status=status.HTTP_201_CREATED)
-                # 없다면 Movie 모델에 movie도 저장
-                else:
-                    movie_serializer.save()
-                    adaptation_serializer.save(movie=movie, user=request.user)
-                    return Response(adaptation_serializer.data, status=status.HTTP_201_CREATED)
+                # 저장
+                adaptation_serializer.save(movie=movie, user=request.user)
+                return Response(adaptation_serializer.data, status=status.HTTP_201_CREATED)
         # 로그인 요구
         else:
             data = {
